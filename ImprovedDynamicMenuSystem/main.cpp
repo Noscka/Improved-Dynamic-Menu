@@ -40,5 +40,5 @@ int main()
 
     SomeMenu.AddMenuEntry(MenuEntry(L"Up", up));
 
-    SomeMenu.DrawMenu();
+    SomeMenu.StartMenu();
 }

@@ -80,12 +80,12 @@ public:
 	/// <summary>
 	/// Starts the menu
 	/// </summary>
-	void CreateMenu();
+	void StartMenu();
 
 	/// <summary>
 	/// Draws the menu
 	/// </summary>
-	void DrawMenu();
+	void DrawMenu(int CurrentIndex);
 
 	/// <summary>
 	/// Adds entry to menu

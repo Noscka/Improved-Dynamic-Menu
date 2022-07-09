@@ -26,7 +26,7 @@ void DynamicMenu::QuitMenu()
 	ContinueMenu = false;
 }
 
-void DynamicMenu::DrawMenu()
+void DynamicMenu::DrawMenu(int CurrentIndex)
 {
 	std::wstring OutputString; // string for full "display" as it is the most perfomace efficent method
 
@@ -40,8 +40,6 @@ void DynamicMenu::DrawMenu()
 
 	GetConsoleScreenBufferInfo(GetStdHandle(STD_OUTPUT_HANDLE), &csbi);
 	int columns = csbi.srWindow.Right - csbi.srWindow.Left + 1;
-
-	int CurrentIndex = 0;
 
 	// for loop using counter to get the index so to add the >< to the selected option
 	int counter = 0;
@@ -94,7 +92,7 @@ void DynamicMenu::DrawMenu()
 	wprintf(OutputString.c_str());
 }
 
-void DynamicMenu::CreateMenu()
+void DynamicMenu::StartMenu()
 {
 	ContinueMenu = true; // incase menu was quit before
 
@@ -108,74 +106,11 @@ void DynamicMenu::CreateMenu()
 		MenuEntryList.Append(MenuEntry(L"Quit", Func));
 	}
 
-	int c, ex, counter = 0, CurrentIndex = 0, TitleSize = -1, TotalSize = 0;
+	int c, ex, counter = 0, CurrentIndex = 0;
 
 	while (ContinueMenu)
 	{
-		std::wstring OutputString; // string for full "display" as it is the most perfomace efficent method
-
-		if (CustomTitle) /* If custom Title is true, its going to use the straight characters instead of generating a unicode title*/
-			OutputString = Title;
-		else
-			OutputString = AsciiTextGenerator::UnicodeTitleGenerate(Title); // add title with "ascii generator"
-
-		for (int i = 0; i < OutputString.size(); i++)
-			if (OutputString[i] == L'\n') TitleSize++;
-
-		GetConsoleScreenBufferInfo(GetStdHandle(STD_OUTPUT_HANDLE), &csbi);
-		columns = csbi.srWindow.Right - csbi.srWindow.Left + 1;
-		rows = csbi.srWindow.Bottom - csbi.srWindow.Top + 1;
-
-		// for loop using counter to get the index so to add the >< to the selected option
-		counter = 0;
-		for (MenuEntry Entry : MenuEntryList)
-		{
-			/* Do different things for NormalEntry and Submenu Entry*/
-			switch (Entry.EntryType)
-			{
-			case NormalEntry:
-				// Append to string as to make it be 1 print operation, makes it way quicker
-				if (counter == CurrentIndex)
-				{
-					OutputString += std::wstring((columns / 2) - (1 + Entry.Name.length()) / 2, ' ') + L">" + Entry.Name + L"<\n";
-				}
-				else
-				{
-					OutputString += std::wstring((columns / 2) - Entry.Name.length() / 2, ' ') + Entry.Name + L'\n';
-				}
-				break;
-			case SubMenuEntry:
-				// Append to string as to make it be 1 print operation, makes it way quicker
-				if (counter == CurrentIndex)
-				{
-					OutputString += std::wstring((columns / 2) - (1 + Entry.Name.length()) / 2, ' ') + L"\033[36m" + L">" + Entry.Name + L"<\033[0m" + L'\n';
-				}
-				else
-				{
-					OutputString += std::wstring((columns / 2) - Entry.Name.length() / 2, ' ') + L"\033[36m" + Entry.Name + L"\033[0m" + L'\n';
-				}
-				break;
-
-			case BooleanEntry:
-				std::wstring FullBoolText = Entry.Name + std::wstring(4, ' ') + L"[ ]";
-
-				if (counter == CurrentIndex)
-				{
-					OutputString += std::wstring((columns / 2) - (1 + Entry.Name.length()) / 2, ' ') + L"\033[36m" + L">" + FullBoolText + L"<\033[0m" + L'\n';
-				}
-				else
-				{
-					OutputString += std::wstring((columns / 2) - Entry.Name.length() / 2, ' ') + L"\033[36m" + FullBoolText + L"\033[0m" + L'\n';
-				}
-				break;
-			}
-			counter++;
-		}
-
-		wprintf(OutputString.c_str());
-
-		for (int i = 0; i < OutputString.size(); i++)
-			if (OutputString[i] == L'\n') TotalSize++;
+		DrawMenu(CurrentIndex);
 
 		HANDLE hConsole = GetStdHandle(STD_OUTPUT_HANDLE);
 		COORD pos = { (columns / 2), (CurrentIndex) };
@@ -196,7 +131,7 @@ void DynamicMenu::CreateMenu()
 
 			case SubMenuEntry:
 				clear_screen();
-				MenuEntryList[CurrentIndex].SubMenu->CreateMenu();
+				MenuEntryList[CurrentIndex].SubMenu->StartMenu();
 				break;
 			}
 		}
