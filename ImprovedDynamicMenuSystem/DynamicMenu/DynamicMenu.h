@@ -85,7 +85,9 @@ public:
 	/// <summary>
 	/// Draws the menu
 	/// </summary>
-	void DrawMenu(int CurrentIndex);
+	void DrawMenu(int CurrentIndex, int* TitleSize);
+
+	std::wstring EntryString(int CurrentIndex, bool selected);
 
 	/// <summary>
 	/// Adds entry to menu
