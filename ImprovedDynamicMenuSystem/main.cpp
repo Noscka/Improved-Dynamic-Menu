@@ -6,15 +6,16 @@
 void Print()
 {
     wprintf(L"gwagawga");
+    system("Pause");
 }
 
 int main()
 {
     _setmode(_fileno(stdout), _O_U8TEXT);
 
-    DynamicMenu SomeMenu = DynamicMenu(L"gaga", true);
+    DynamicMenu SomeMenu = DynamicMenu(L"gaga", false, true);
 
-    DynamicMenu secondmenu = DynamicMenu(L"Menu2", true);
+    DynamicMenu secondmenu = DynamicMenu(L"Menu2", false, true);
     secondmenu.AddMenuEntry(MenuEntry(L"some", Print));
     secondmenu.AddMenuEntry(MenuEntry(L"some", Print));
 

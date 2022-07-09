@@ -12,10 +12,11 @@ void clear_screen(char fill = ' ')
 	SetConsoleCursorPosition(console, tl);
 }
 
-DynamicMenu::DynamicMenu(std::wstring title, bool addExitEntry)
+DynamicMenu::DynamicMenu(std::wstring title, bool customTitle, bool addExitEntry)
 {
 	Title = title;
 	AddExitEntry = addExitEntry;
+	CustomTitle = customTitle;
 }
 
 void DynamicMenu::QuitMenu()
@@ -50,7 +51,10 @@ void DynamicMenu::CreateMenu()
 	{
 		std::wstring OutputString; // string for full "display" as it is the most perfomace efficent method
 
-		OutputString = AsciiTextGenerator::AsciiWrite(Title); // add title with "ascii generator"
+		if (CustomTitle) /* If custom Title is true, its going to use the straight characters instead of generating a unicode title*/
+			OutputString = Title;
+		else
+			OutputString = AsciiTextGenerator::UnicodeTitleGenerate(Title); // add title with "ascii generator"
 
 		GetConsoleScreenBufferInfo(GetStdHandle(STD_OUTPUT_HANDLE), &csbi);
 		columns = csbi.srWindow.Right - csbi.srWindow.Left + 1;
@@ -103,7 +107,7 @@ void DynamicMenu::CreateMenu()
 			switch (((MenuEntry)*iterator).EntryType)
 			{
 			case NormalEntry:
-				//Functions::ClearScreen();
+				clear_screen();
 				((MenuEntry)*iterator).Function();
 				break;
 

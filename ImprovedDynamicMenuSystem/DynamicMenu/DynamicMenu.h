@@ -52,14 +52,14 @@ private:
 	CONSOLE_SCREEN_BUFFER_INFO csbi;
 	int columns, rows;
 	std::list<MenuEntry> MenuEntryList;
-	bool SetUpEntries, ContinueMenu, AddExitEntry;
+	bool SetUpEntries, ContinueMenu, AddExitEntry, CustomTitle;
 	std::wstring Title;
 public:
 	/// <summary>
 	/// Constructer for the menu
 	/// </summary>
 	/// <param name="Title">Title/name of the menu</param>
-	DynamicMenu(std::wstring title, bool addExitEntry);
+	DynamicMenu(std::wstring title, bool customTitle = false, bool addExitEntry = true);
 
 	/// <summary>
 	/// Create Menu once everything was set up

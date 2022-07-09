@@ -14,7 +14,7 @@ Website: www.lordhypersonic.blogspot.com
 class AsciiTextGenerator
 {
 public:
-	static std::wstring AsciiWrite(std::wstring input)
+	static std::wstring UnicodeTitleGenerate(std::wstring input)
 	{
 		std::wstring output;
 
