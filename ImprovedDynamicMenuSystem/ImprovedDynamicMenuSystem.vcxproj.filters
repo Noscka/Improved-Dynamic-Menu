@@ -26,5 +26,8 @@
     <ClInclude Include="DynamicMenu\DynamicMenu.h">
       <Filter>Header Files</Filter>
     </ClInclude>
+    <ClInclude Include="DynamicMenu\UnicodeTextGenerator\UnicodeTextGenerator.h">
+      <Filter>Header Files</Filter>
+    </ClInclude>
   </ItemGroup>
 </Project>

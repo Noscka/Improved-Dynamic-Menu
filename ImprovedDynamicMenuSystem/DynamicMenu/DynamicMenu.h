@@ -8,6 +8,7 @@
 #include <Windows.h>
 #include <iostream>
 #include <list>
+#include "UnicodeTextGenerator/UnicodeTextGenerator.h"
 
 #define ARROW_UP    72
 #define ARROW_DOWN  80
@@ -17,7 +18,7 @@ class DynamicMenu;
 
 enum Type
 {
-	Entry = 0, /* Normal entry with a function */
+	NormalEntry = 0, /* Normal entry with a function */
 	SubMenuEntry = 1, /* an entry which contains a submenu */
 };
 
@@ -34,7 +35,7 @@ public:
 	{
 		Name = name;
 		Function = function;
-		EntryType = Entry;
+		EntryType = NormalEntry;
 	}
 
 	MenuEntry(std::wstring name, DynamicMenu *subMenu)
@@ -48,22 +49,31 @@ public:
 class DynamicMenu
 {
 private:
-	static CONSOLE_SCREEN_BUFFER_INFO csbi;
-	static int columns, rows;
-	static std::list<MenuEntry> MenuEntryList;
-	static bool SetUpEntries, ContinueMenu;
+	CONSOLE_SCREEN_BUFFER_INFO csbi;
+	int columns, rows;
+	std::list<MenuEntry> MenuEntryList;
+	bool SetUpEntries, ContinueMenu, AddExitEntry;
+	std::wstring Title;
 public:
+	/// <summary>
+	/// Constructer for the menu
+	/// </summary>
+	/// <param name="Title">Title/name of the menu</param>
+	DynamicMenu(std::wstring title, bool addExitEntry);
+
 	/// <summary>
 	/// Create Menu once everything was set up
 	/// </summary>
 	/// <param name="Title">Title to be displayed</param>
 	/// <param name="AddExitEntry">if there should be "exit menu" entry at the bottom</param>
-	static void CreateMenu(std::wstring Title);
+	void CreateMenu();
 
 	/// <summary>
 	/// Add Entries to Menu
 	/// </summary>
 	/// <param name="size">Amount of entries being added</param>
 	/// <param name="...">Entry Variable</param>
-	static void AddMenuEntry(MenuEntry Entry);
+	void AddMenuEntry(MenuEntry Entry);
+
+	void QuitMenu();
 };

@@ -12,12 +12,15 @@ int main()
 {
     _setmode(_fileno(stdout), _O_U8TEXT);
 
-    DynamicMenu SomeMenu = DynamicMenu();
+    DynamicMenu SomeMenu = DynamicMenu(L"gaga", true);
 
-    DynamicMenu secondmenu = DynamicMenu();
+    DynamicMenu secondmenu = DynamicMenu(L"Menu2", true);
+    secondmenu.AddMenuEntry(MenuEntry(L"some", Print));
+    secondmenu.AddMenuEntry(MenuEntry(L"some", Print));
+
 
     SomeMenu.AddMenuEntry(MenuEntry(L"some", Print));
-    SomeMenu.AddMenuEntry(MenuEntry(L"some", &secondmenu));
+    SomeMenu.AddMenuEntry(MenuEntry(L"some2", &secondmenu));
     SomeMenu.AddMenuEntry(MenuEntry(L"2", Print));
-    SomeMenu.CreateMenu(L"gaga");
+    SomeMenu.CreateMenu();
 }

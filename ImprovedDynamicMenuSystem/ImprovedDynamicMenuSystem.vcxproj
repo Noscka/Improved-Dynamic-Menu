@@ -132,6 +132,7 @@
   </ItemGroup>
   <ItemGroup>
     <ClInclude Include="DynamicMenu\DynamicMenu.h" />
+    <ClInclude Include="DynamicMenu\UnicodeTextGenerator\UnicodeTextGenerator.h" />
   </ItemGroup>
   <Import Project="$(VCTargetsPath)\Microsoft.Cpp.targets" />
   <ImportGroup Label="ExtensionTargets">
