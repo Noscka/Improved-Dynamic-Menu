@@ -21,6 +21,7 @@ enum Type
 {
 	NormalEntry = 0, /* Normal entry with a function */
 	SubMenuEntry = 1, /* an entry which contains a submenu */
+	BooleanEntry = 2, /* an entry that has a boolean */
 };
 
 class MenuEntry
@@ -32,10 +33,9 @@ public:
 
 	Type EntryType;
 
-	MenuEntry()
-	{
+	bool* Boolean;
 
-	}
+	MenuEntry(){}
 
 	MenuEntry(std::wstring name, std::function<void()> function)
 	{
@@ -50,6 +50,13 @@ public:
 		SubMenu = subMenu;
 		EntryType = SubMenuEntry;
 	}
+
+	MenuEntry(std::wstring name, bool* boolean)
+	{
+		Name = name;
+		Boolean = boolean;
+		EntryType = BooleanEntry;
+	}
 };
 
 class DynamicMenu
@@ -61,25 +68,33 @@ private:
 	bool ContinueMenu, AddExitEntry, CustomTitle;
 	std::wstring Title;
 public:
+	
 	/// <summary>
-	/// Constructer for the menu
+	/// creates the menu object
 	/// </summary>
-	/// <param name="Title">Title/name of the menu</param>
+	/// <param name="title">- Title</param>
+	/// <param name="customTitle">- if the title should be generated to UnicodeText or use the string direct</param>
+	/// <param name="addExitEntry">- add a premade function to stop the menu</param>
 	DynamicMenu(std::wstring title, bool customTitle = false, bool addExitEntry = true);
 
 	/// <summary>
-	/// Create Menu once everything was set up
+	/// Starts the menu
 	/// </summary>
-	/// <param name="Title">Title to be displayed</param>
-	/// <param name="AddExitEntry">if there should be "exit menu" entry at the bottom</param>
 	void CreateMenu();
 
 	/// <summary>
-	/// Add Entries to Menu
+	/// Draws the menu
 	/// </summary>
-	/// <param name="size">Amount of entries being added</param>
-	/// <param name="...">Entry Variable</param>
+	void DrawMenu();
+
+	/// <summary>
+	/// Adds entry to menu
+	/// </summary>
+	/// <param name="Entry">- the entry to add</param>
 	void AddMenuEntry(MenuEntry Entry);
 
+	/// <summary>
+	/// quits the menu
+	/// </summary>
 	void QuitMenu();
 };
