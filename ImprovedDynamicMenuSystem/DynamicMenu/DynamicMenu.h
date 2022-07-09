@@ -9,6 +9,7 @@
 #include <iostream>
 #include <list>
 #include "UnicodeTextGenerator/UnicodeTextGenerator.h"
+#include "../DynamicArrayFiles/DynamicArray.h"
 
 #define ARROW_UP    72
 #define ARROW_DOWN  80
@@ -31,6 +32,11 @@ public:
 
 	Type EntryType;
 
+	MenuEntry()
+	{
+
+	}
+
 	MenuEntry(std::wstring name, std::function<void()> function)
 	{
 		Name = name;
@@ -51,8 +57,8 @@ class DynamicMenu
 private:
 	CONSOLE_SCREEN_BUFFER_INFO csbi;
 	int columns, rows;
-	std::list<MenuEntry> MenuEntryList;
-	bool SetUpEntries, ContinueMenu, AddExitEntry, CustomTitle;
+	DynamicArray<MenuEntry> MenuEntryList;
+	bool ContinueMenu, AddExitEntry, CustomTitle;
 	std::wstring Title;
 public:
 	/// <summary>

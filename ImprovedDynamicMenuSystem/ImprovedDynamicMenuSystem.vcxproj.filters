@@ -29,5 +29,8 @@
     <ClInclude Include="DynamicMenu\UnicodeTextGenerator\UnicodeTextGenerator.h">
       <Filter>Header Files</Filter>
     </ClInclude>
+    <ClInclude Include="DynamicArrayFiles\DynamicArray.h">
+      <Filter>Header Files</Filter>
+    </ClInclude>
   </ItemGroup>
 </Project>

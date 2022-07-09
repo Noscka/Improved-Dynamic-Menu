@@ -131,6 +131,7 @@
     <ClCompile Include="main.cpp" />
   </ItemGroup>
   <ItemGroup>
+    <ClInclude Include="DynamicArrayFiles\DynamicArray.h" />
     <ClInclude Include="DynamicMenu\DynamicMenu.h" />
     <ClInclude Include="DynamicMenu\UnicodeTextGenerator\UnicodeTextGenerator.h" />
   </ItemGroup>

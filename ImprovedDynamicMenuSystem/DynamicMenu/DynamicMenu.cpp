@@ -17,6 +17,8 @@ DynamicMenu::DynamicMenu(std::wstring title, bool customTitle, bool addExitEntry
 	Title = title;
 	AddExitEntry = addExitEntry;
 	CustomTitle = customTitle;
+
+	MenuEntryList = DynamicArray<MenuEntry>(3, 2);
 }
 
 void DynamicMenu::QuitMenu()
@@ -34,18 +36,11 @@ void DynamicMenu::CreateMenu()
 		{
 			return this->QuitMenu();
 		};
-		
-		MenuEntry ME = MenuEntry(L"Quit", Func);
-		MenuEntryList.push_back(ME);
+
+		MenuEntryList.Append(MenuEntry(L"Quit", Func));
 	}
 
 	int c, ex, counter = 0, CurrentIndex = 0;
-
-	// only run is entries were added
-	if (!SetUpEntries)
-	{
-		throw std::invalid_argument("No Entries Added");
-	}
 
 	while (ContinueMenu)
 	{
@@ -101,19 +96,19 @@ void DynamicMenu::CreateMenu()
 		if (c == ENTER)
 		{
 			/* Get the entry from the list */
-			std::list<MenuEntry>::iterator iterator = MenuEntryList.begin();
-			std::advance(iterator, CurrentIndex);
+			//std::list<MenuEntry>::iterator iterator = MenuEntryList.begin();
+			//std::advance(iterator, CurrentIndex);
 
-			switch (((MenuEntry)*iterator).EntryType)
+			switch (MenuEntryList[CurrentIndex].EntryType)
 			{
 			case NormalEntry:
 				clear_screen();
-				((MenuEntry)*iterator).Function();
+				MenuEntryList[CurrentIndex].Function();
 				break;
 
 			case SubMenuEntry:
 				clear_screen();
-				((MenuEntry)*iterator).SubMenu->CreateMenu();
+				MenuEntryList[CurrentIndex].SubMenu->CreateMenu();
 				break;
 			}
 		}
@@ -130,7 +125,7 @@ void DynamicMenu::CreateMenu()
 				break;
 
 			case ARROW_DOWN:
-				if (CurrentIndex < MenuEntryList.size() - 1) // Increment only if larger the 0
+				if (CurrentIndex < MenuEntryList.GetArrayIndexPointer() - 1) // Increment only if larger the 0
 				{
 					CurrentIndex++; // Increment the Indenetation
 				}
@@ -144,7 +139,5 @@ void DynamicMenu::CreateMenu()
 
 void DynamicMenu::AddMenuEntry(MenuEntry Entry)
 {
-	SetUpEntries = true; // allow for "CreateMenu" to run
-
-	MenuEntryList.push_back(Entry);
+	MenuEntryList.Append(Entry);
 }
