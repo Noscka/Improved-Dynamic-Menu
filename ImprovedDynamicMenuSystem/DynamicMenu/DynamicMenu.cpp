@@ -47,6 +47,7 @@ void DynamicMenu::DrawMenu(int CurrentIndex, int* TitleSize)
 
 	GetConsoleScreenBufferInfo(GetStdHandle(STD_OUTPUT_HANDLE), &csbi);
 	columns = csbi.srWindow.Right - csbi.srWindow.Left + 1;
+	rows = csbi.srWindow.Bottom - csbi.srWindow.Top + 1;
 
 	// for loop using counter to get the index so to add the >< to the selected option
 	for (int i = 0; i < MenuEntryList.ArrayIndexPointer; i++)
@@ -58,6 +59,8 @@ void DynamicMenu::DrawMenu(int CurrentIndex, int* TitleSize)
 	}
 
 	wprintf(OutputString.c_str());
+
+	SetConsoleCursorPosition(GetStdHandle(STD_OUTPUT_HANDLE), { 0, (SHORT)(CurrentIndex) });
 }
 
 std::wstring DynamicMenu::EntryString(int EntryIndex, bool selected)
@@ -65,7 +68,7 @@ std::wstring DynamicMenu::EntryString(int EntryIndex, bool selected)
 	int SpaceLenght = ((columns / 2) - MenuEntryList[EntryIndex].Name.length() / 2);
 	std::wstring output;
 
-	switch (MenuEntryList[EntryIndex].EntryType)
+	switch (MenuEntryList[EntryIndex].EntryType) /* Different printing types for different entry types*/
 	{
 	case NormalEntry:
 		// Append to string as to make it be 1 print operation, makes it way quicker
@@ -79,7 +82,6 @@ std::wstring DynamicMenu::EntryString(int EntryIndex, bool selected)
 		}
 		break;
 	case SubMenuEntry:
-		// Append to string as to make it be 1 print operation, makes it way quicker
 		if (selected)
 		{
 			output += std::wstring(SpaceLenght - 2, ' ') + L"\033[36m>>" + MenuEntryList[EntryIndex].Name + L"<<\033[0m\n";
@@ -143,11 +145,13 @@ void DynamicMenu::StartMenu()
 			case NormalEntry:
 				clear_screen();
 				MenuEntryList[CurrentIndex].Function();
+				DrawMenu(CurrentIndex, &TitleSize);
 				break;
 
 			case SubMenuEntry:
 				clear_screen();
 				MenuEntryList[CurrentIndex].SubMenu->StartMenu();
+				DrawMenu(CurrentIndex, &TitleSize);
 				break;
 			}
 		}
@@ -206,15 +210,36 @@ void DynamicMenu::StartMenu()
 			|| Old Selected Entry
 			*/
 
-			if (CurrentIndex > OldIndex)
+			COORD FinalPosition;
+
+			if (CurrentIndex > OldIndex) /* Going Down */
 			{
+
 				SetConsoleCursorPosition(GetStdHandle(STD_OUTPUT_HANDLE), { 0, (SHORT)(TitleSize + CurrentIndex-1) });
 				wprintf((EntryString(OldIndex, false) + EntryString(CurrentIndex, true)).c_str());
+
+				if ((TitleSize + CurrentIndex) + (rows / 2) < 0)
+					FinalPosition = { 0,0 };
+				else if ((TitleSize + CurrentIndex) + (rows / 2) > MenuEntryList.ArrayIndexPointer)
+					FinalPosition = { 0, (SHORT)(MenuEntryList.ArrayIndexPointer + TitleSize - 1) };
+				else
+					FinalPosition = { 0, (SHORT)((TitleSize + CurrentIndex) + (rows / 2)) };
+
+				SetConsoleCursorPosition(GetStdHandle(STD_OUTPUT_HANDLE), FinalPosition);
 			}
-			else
+			else /* Going Up */
 			{
 				SetConsoleCursorPosition(GetStdHandle(STD_OUTPUT_HANDLE), { 0, (SHORT)(TitleSize + CurrentIndex) });
 				wprintf((EntryString(CurrentIndex, true) + EntryString(OldIndex, false)).c_str());
+
+				if ((TitleSize + CurrentIndex) - (rows / 2) < 0)
+					FinalPosition = { 0,0 };
+				else if ((TitleSize + CurrentIndex) - (rows / 2) > MenuEntryList.ArrayIndexPointer)
+					FinalPosition = { 0, (SHORT)MenuEntryList.ArrayIndexPointer };
+				else
+					FinalPosition = { 0, (SHORT)((TitleSize + CurrentIndex) - (rows / 2)) };
+
+				SetConsoleCursorPosition(GetStdHandle(STD_OUTPUT_HANDLE), FinalPosition);
 			}
 
 		}
