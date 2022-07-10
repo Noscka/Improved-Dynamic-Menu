@@ -37,16 +37,15 @@ int main()
 
     MainMenu.AddMenuEntry(MenuEntry(L"Another Menu", &SecondaryMenu));
 
+    MainMenu.AddMenuEntry(MenuEntry(L"========== Boolean =========="));
+
     MainMenu.AddMenuEntry(MenuEntry(L"Toggle", &SomeBool));
     MainMenu.AddMenuEntry(MenuEntry(L"Check Bool", CheckBool));
 
+    MainMenu.AddMenuEntry(MenuEntry(L"========== Integer =========="));
+
     MainMenu.AddMenuEntry(MenuEntry(L"Number", &number));
     MainMenu.AddMenuEntry(MenuEntry(L"Check Number", CheckNumber));
-
-    for (int i = 0; i < 30; i++)
-    {
-        MainMenu.AddMenuEntry(MenuEntry(std::to_wstring(i), Print));
-    }
 
     MainMenu.StartMenu();
 }

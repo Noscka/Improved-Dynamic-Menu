@@ -47,7 +47,7 @@ void DynamicMenu::StartMenu()
 
 			switch (MenuEntryList[CurrentIndex].EntryType)
 			{
-			case NormalEntry:
+			case FunctionEntry:
 				clear_screen();
 				MenuEntryList[CurrentIndex].Function();
 				DrawMenu(CurrentIndex, &TitleSize);
@@ -68,11 +68,12 @@ void DynamicMenu::StartMenu()
 				break;
 
 			case IntegerEntry:
+			{
 				std::wstring NewInt;
 				wchar_t c;
 				bool ContinueIntType = true;
 
-				COORD NumberPosition = { (((columns / 2) - MenuEntryList[CurrentIndex].Name.length() / 2) + MenuEntryList[CurrentIndex].Name.length() + 3), (CurrentIndex+TitleSize)};
+				COORD NumberPosition = { (((columns / 2) - MenuEntryList[CurrentIndex].Name.length() / 2) + MenuEntryList[CurrentIndex].Name.length() + 3), (CurrentIndex + TitleSize) };
 
 				SetConsoleCursorPosition(ConsoleHandle, NumberPosition);
 
@@ -107,10 +108,14 @@ void DynamicMenu::StartMenu()
 					}
 				}
 
-				if(!NewInt.empty())
+				if (!NewInt.empty())
 					*MenuEntryList[CurrentIndex].Integer = std::stoi(NewInt);
 				ClearCurrentLine(TitleSize + CurrentIndex);
 				wprintf(EntryString(CurrentIndex, true).c_str());
+				break;
+			}
+
+			default:
 				break;
 			}
 		}
@@ -274,7 +279,7 @@ std::wstring DynamicMenu::EntryString(int EntryIndex, bool selected)
 
 	switch (MenuEntryList[EntryIndex].EntryType) /* Different printing types for different entry types*/
 	{
-	case NormalEntry:
+	case FunctionEntry:
 		// Append to string as to make it be 1 print operation, makes it way quicker
 		if (selected)
 		{
@@ -313,7 +318,6 @@ std::wstring DynamicMenu::EntryString(int EntryIndex, bool selected)
 		break;
 
 	case IntegerEntry:
-
 		if (selected)
 		{
 			EntryText = MenuEntryList[EntryIndex].Name + std::wstring(4, ' ') + L"<" + std::to_wstring(*MenuEntryList[EntryIndex].Integer) + L">\n";
@@ -324,6 +328,10 @@ std::wstring DynamicMenu::EntryString(int EntryIndex, bool selected)
 			EntryText = MenuEntryList[EntryIndex].Name + std::wstring(4, ' ') + std::to_wstring(*MenuEntryList[EntryIndex].Integer);
 			return std::wstring(SpaceLenght, ' ') + EntryText + L"\n";
 		}
+		break;
+
+	case EmptyEntry:
+		return std::wstring(SpaceLenght, ' ') + MenuEntryList[EntryIndex].Name + L"\n";
 		break;
 	}
 }

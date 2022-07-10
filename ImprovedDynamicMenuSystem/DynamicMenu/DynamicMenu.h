@@ -23,10 +23,11 @@ class DynamicMenu;
 
 enum Type
 {
-	NormalEntry = 0, /* Normal entry with a function */
-	SubMenuEntry = 1, /* an entry which contains a submenu */
-	BooleanEntry = 2, /* an entry that has a boolean */
-	IntegerEntry = 3, /* an entry that has a Integer */
+	EmptyEntry = 0, /* Entry with just name */
+	FunctionEntry = 1, /* Normal entry with a function */
+	SubMenuEntry = 2, /* an entry which contains a submenu */
+	BooleanEntry = 3, /* an entry that has a boolean */
+	IntegerEntry = 4, /* an entry that has a Integer */
 };
 
 class MenuEntry
@@ -42,15 +43,38 @@ public:
 	bool* Boolean;
 	int* Integer;
 
+	/// <summary>
+	/// For Arrays
+	/// </summary>
 	MenuEntry(){}
 
+	/// <summary>
+	/// Empty Entry
+	/// </summary>
+	/// <param name="name">- Seperator characters</param>
+	MenuEntry(std::wstring name)
+	{
+		Name = name;
+		EntryType = EmptyEntry;
+	}
+
+	/// <summary>
+	/// Function Entry
+	/// </summary>
+	/// <param name="name">- entry name</param>
+	/// <param name="function">- what to do when selected</param>
 	MenuEntry(std::wstring name, std::function<void()> function)
 	{
 		Name = name;
 		Function = function;
-		EntryType = NormalEntry;
+		EntryType = FunctionEntry;
 	}
 
+	/// <summary>
+	/// Sub Menu entry
+	/// </summary>
+	/// <param name="name">- entry name</param>
+	/// <param name="subMenu">- pointer to submenu object</param>
 	MenuEntry(std::wstring name, DynamicMenu *subMenu)
 	{
 		Name = name;
@@ -58,6 +82,11 @@ public:
 		EntryType = SubMenuEntry;
 	}
 
+	/// <summary>
+	/// Boolean entry
+	/// </summary>
+	/// <param name="name">- entry name</param>
+	/// <param name="boolean">- pointer to bool</param>
 	MenuEntry(std::wstring name, bool* boolean)
 	{
 		Name = name;
@@ -65,6 +94,11 @@ public:
 		EntryType = BooleanEntry;
 	}
 
+	/// <summary>
+	/// integer entry
+	/// </summary>
+	/// <param name="name">- entry name</param>
+	/// <param name="integer">- pointer to int</param>
 	MenuEntry(std::wstring name, int* integer)
 	{
 		Name = name;
