@@ -14,9 +14,13 @@ Website: www.lordhypersonic.blogspot.com
 class AsciiTextGenerator
 {
 public:
-	static std::wstring UnicodeTitleGenerate(std::wstring input)
+	static std::wstring UnicodeTitleGenerate(std::wstring input, int columns, bool center)
 	{
 		std::wstring output;
+		int SpaceLenght = ((columns / 2) - ((input.length()*8) / 2));
+
+		if (center)
+			output += std::wstring(SpaceLenght, ' ');
 
 		//loop will print first layer
 		for (int i = 0; i < input.size(); i++)
@@ -161,6 +165,8 @@ public:
 				output += L" ___   ";
 		}
 		output += L"\n";
+		if (center)
+			output += std::wstring(SpaceLenght, ' ');
 		//loop will print second layer
 		for (int i = 0; i < input.size(); i++)
 		{
@@ -304,6 +310,8 @@ public:
 				output += L"|__ \\  ";
 		}
 		output += L"\n";
+		if (center)
+			output += std::wstring(SpaceLenght, ' ');
 		//loop will print third layer
 		for (int i = 0; i < input.size(); i++)
 		{
@@ -447,6 +455,8 @@ public:
 				output += L"   ) | ";
 		}
 		output += L"\n";
+		if (center)
+			output += std::wstring(SpaceLenght, ' ');
 		//loop will print fourth layer
 		for (int i = 0; i < input.size(); i++)
 		{
@@ -590,6 +600,8 @@ public:
 				output += L"  / /  ";
 		}
 		output += L"\n";
+		if (center)
+			output += std::wstring(SpaceLenght, ' ');
 		//loop will print fifth layer
 		for (int i = 0; i < input.size(); i++)
 		{
@@ -733,6 +745,8 @@ public:
 				output += L" |_|   ";
 		}
 		output += L"\n";
+		if (center)
+			output += std::wstring(SpaceLenght, ' ');
 		//loop will print sixth layer
 		for (int i = 0; i < input.size(); i++)
 		{
@@ -876,7 +890,6 @@ public:
 				output += L" (_)   ";
 		}
 		output += L"\n";
-
 		return output;
 	}
 };

@@ -10,10 +10,17 @@ void Print()
 }
 
 bool SomeBool = false;
+int number = 0;
 
 void CheckBool()
 {
-    wprintf(SomeBool ? L"true" : L"false");
+    wprintf((SomeBool ? L"true" : L"false"));
+    system("Pause");
+}
+
+void CheckNumber()
+{
+    wprintf(std::to_wstring(number).c_str());
     system("Pause");
 }
 
@@ -21,20 +28,22 @@ int main()
 {
     _setmode(_fileno(stdout), _O_U8TEXT);
 
-    DynamicMenu SomeMenu = DynamicMenu(L"gaga", false, true);
+    DynamicMenu MainMenu = DynamicMenu(L"Main Menu", false, true, true);
 
-    MenuEntry ME = MenuEntry(L"oogae", Print);
-    ME.EntryType = SubMenuEntry;
+    DynamicMenu SecondaryMenu = DynamicMenu(L"Second Menu", false, true, true);
 
-    SomeMenu.AddMenuEntry(ME);
-    SomeMenu.AddMenuEntry(MenuEntry(L"OnOff", &SomeBool));
+    MainMenu.AddMenuEntry(MenuEntry(L"Another Menu", &SecondaryMenu));
 
-    SomeMenu.AddMenuEntry(MenuEntry(L"Check Bool", CheckBool));
+    MainMenu.AddMenuEntry(MenuEntry(L"Toggle", &SomeBool));
+    MainMenu.AddMenuEntry(MenuEntry(L"Check Bool", CheckBool));
+
+    MainMenu.AddMenuEntry(MenuEntry(L"Number", &number));
+    MainMenu.AddMenuEntry(MenuEntry(L"Check Number", CheckNumber));
 
     for (int i = 0; i < 30; i++)
     {
-        SomeMenu.AddMenuEntry(MenuEntry(L"gawg", Print));
+        MainMenu.AddMenuEntry(MenuEntry(std::to_wstring(i), Print));
     }
 
-    SomeMenu.StartMenu();
+    MainMenu.StartMenu();
 }

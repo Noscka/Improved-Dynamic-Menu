@@ -12,11 +12,12 @@ void clear_screen(char fill = ' ')
 	SetConsoleCursorPosition(console, tl);
 }
 
-DynamicMenu::DynamicMenu(std::wstring title, bool customTitle, bool addExitEntry)
+DynamicMenu::DynamicMenu(std::wstring title, bool customTitle, bool addExitEntry, bool centeredTitle)
 {
 	Title = title;
 	AddExitEntry = addExitEntry;
 	CustomTitle = customTitle;
+	CenteredTitle = centeredTitle;
 
 	MenuEntryList = DynamicArray<MenuEntry>(3, 2);
 }
@@ -30,12 +31,21 @@ void DynamicMenu::DrawMenu(int CurrentIndex, int* TitleSize)
 {
 	clear_screen();
 
+	GetConsoleScreenBufferInfo(GetStdHandle(STD_OUTPUT_HANDLE), &csbi);
+	columns = csbi.srWindow.Right - csbi.srWindow.Left + 1;
+	rows = csbi.srWindow.Bottom - csbi.srWindow.Top + 1;
+
 	std::wstring OutputString; // string for full "display" as it is the most perfomace efficent method
 
 	if (CustomTitle) /* If custom Title is true, its going to use the straight characters instead of generating a unicode title*/
-		OutputString = Title;
+		if(CenteredTitle)
+			OutputString = Title;
+		else
+			OutputString = std::wstring(((columns / 2) - Title.length() / 2), ' ') + Title;
 	else
-		OutputString = AsciiTextGenerator::UnicodeTitleGenerate(Title); // add title with "ascii generator"
+		OutputString = AsciiTextGenerator::UnicodeTitleGenerate(Title, columns, CenteredTitle); // add title with "ascii generator"
+
+	*TitleSize = 0;
 
 	for (int i = 0; i < OutputString.size(); i++)
 	{
@@ -44,10 +54,6 @@ void DynamicMenu::DrawMenu(int CurrentIndex, int* TitleSize)
 			(*TitleSize)++;
 		}
 	}
-
-	GetConsoleScreenBufferInfo(GetStdHandle(STD_OUTPUT_HANDLE), &csbi);
-	columns = csbi.srWindow.Right - csbi.srWindow.Left + 1;
-	rows = csbi.srWindow.Bottom - csbi.srWindow.Top + 1;
 
 	// for loop using counter to get the index so to add the >< to the selected option
 	for (int i = 0; i < MenuEntryList.ArrayIndexPointer; i++)
@@ -66,7 +72,7 @@ void DynamicMenu::DrawMenu(int CurrentIndex, int* TitleSize)
 std::wstring DynamicMenu::EntryString(int EntryIndex, bool selected)
 {
 	int SpaceLenght = ((columns / 2) - MenuEntryList[EntryIndex].Name.length() / 2);
-	std::wstring output;
+	std::wstring EntryText;
 
 	switch (MenuEntryList[EntryIndex].EntryType) /* Different printing types for different entry types*/
 	{
@@ -74,43 +80,67 @@ std::wstring DynamicMenu::EntryString(int EntryIndex, bool selected)
 		// Append to string as to make it be 1 print operation, makes it way quicker
 		if (selected)
 		{
-			output += std::wstring(SpaceLenght - 2, ' ') + L">>" + MenuEntryList[EntryIndex].Name + L"<<\n";
+			return std::wstring(SpaceLenght - 2, ' ') + L">>" + MenuEntryList[EntryIndex].Name + L"<<\n";
 		}
 		else
 		{
-			output += std::wstring(SpaceLenght, ' ') + MenuEntryList[EntryIndex].Name + L"\n";
+			return std::wstring(SpaceLenght, ' ') + MenuEntryList[EntryIndex].Name + L"\n";
 		}
 		break;
 	case SubMenuEntry:
 		if (selected)
 		{
-			output += std::wstring(SpaceLenght - 2, ' ') + L"\033[36m>>" + MenuEntryList[EntryIndex].Name + L"<<\033[0m\n";
+			return std::wstring(SpaceLenght - 2, ' ') + L"\033[33m>>" + MenuEntryList[EntryIndex].Name + L"<<\033[0m\n";
 		}
 		else
 		{
-			output += std::wstring(SpaceLenght, ' ') + L"\033[36m" + MenuEntryList[EntryIndex].Name + L"\033[0m\n";
+			return std::wstring(SpaceLenght, ' ') + L"\033[33m" + MenuEntryList[EntryIndex].Name + L"\033[0m\n";
 		}
 		break;
 
 	case BooleanEntry:
-		std::wstring FullBoolText;
 		if(*MenuEntryList[EntryIndex].Boolean)
-			FullBoolText = MenuEntryList[EntryIndex].Name + std::wstring(4, ' ') + L"[X]";
+			EntryText = MenuEntryList[EntryIndex].Name + std::wstring(4, ' ') + L"[X]";
 		else
-			FullBoolText = MenuEntryList[EntryIndex].Name + std::wstring(4, ' ') + L"[ ]";
+			EntryText = MenuEntryList[EntryIndex].Name + std::wstring(4, ' ') + L"[ ]";
 
 		if (selected)
 		{
-			output += std::wstring(SpaceLenght - 2, ' ') + L"\033[36m>>" + FullBoolText + L"<<\033[0m\n";
+			return std::wstring(SpaceLenght - 2, ' ') + L">>" + EntryText + L"<<\n";
 		}
 		else
 		{
-			output += std::wstring(SpaceLenght, ' ') + L"\033[36m" + FullBoolText + L"\033[0m\n";
+			return std::wstring(SpaceLenght, ' ') + EntryText + L"\n";
+		}
+		break;
+
+	case IntegerEntry:
+		
+		if (selected)
+		{
+			EntryText = MenuEntryList[EntryIndex].Name + std::wstring(4, ' ') + L"<" + std::to_wstring(*MenuEntryList[EntryIndex].Integer) + L">";
+			//return std::wstring(SpaceLenght - 2, ' ') + L">>" + EntryText + L"<<\n";
+			return std::wstring(SpaceLenght - 2, ' ') + EntryText;
+		}
+		else
+		{
+			EntryText = MenuEntryList[EntryIndex].Name + std::wstring(4, ' ') + std::to_wstring(*MenuEntryList[EntryIndex].Integer);
+			return std::wstring(SpaceLenght, ' ') + EntryText + L"\n";
 		}
 		break;
 	}
+}
 
-	return output;
+void ClearCurrentLine(int Position)
+{
+	COORD tl = { 0, (SHORT)(Position) };
+	CONSOLE_SCREEN_BUFFER_INFO s;
+	HANDLE console = GetStdHandle(STD_OUTPUT_HANDLE);
+	GetConsoleScreenBufferInfo(console, &s);
+	DWORD written, cells = s.dwSize.X;
+	FillConsoleOutputCharacter(console, ' ', cells, tl, &written);
+	FillConsoleOutputAttribute(console, s.wAttributes, cells, tl, &written);
+	SetConsoleCursorPosition(console, tl);
 }
 
 void DynamicMenu::StartMenu()
@@ -160,14 +190,7 @@ void DynamicMenu::StartMenu()
 			case BooleanEntry:
 				*MenuEntryList[CurrentIndex].Boolean = !*MenuEntryList[CurrentIndex].Boolean;
 
-				COORD tl = { 0, (SHORT)(TitleSize + CurrentIndex) };
-				CONSOLE_SCREEN_BUFFER_INFO s;
-				HANDLE console = GetStdHandle(STD_OUTPUT_HANDLE);
-				GetConsoleScreenBufferInfo(console, &s);
-				DWORD written, cells = s.dwSize.X;
-				FillConsoleOutputCharacter(console, ' ', cells, tl, &written);
-				FillConsoleOutputAttribute(console, s.wAttributes, cells, tl, &written);
-				SetConsoleCursorPosition(console, tl);
+				ClearCurrentLine(TitleSize + CurrentIndex);
 
 				wprintf(EntryString(CurrentIndex, true).c_str());
 				break;
@@ -189,6 +212,26 @@ void DynamicMenu::StartMenu()
 				if (CurrentIndex < MenuEntryList.GetArrayIndexPointer() - 1) // Increment only if larger the 0
 				{
 					CurrentIndex++; // Increment the Indenetation
+				}
+				break;
+
+			case ARROW_LEFT:
+				if (MenuEntryList[CurrentIndex].EntryType == IntegerEntry)
+				{
+					(*MenuEntryList[CurrentIndex].Integer)--;
+
+					ClearCurrentLine(TitleSize + CurrentIndex);
+					wprintf(EntryString(CurrentIndex, true).c_str());
+				}
+				break;
+
+			case ARROW_RIGHT:
+				if (MenuEntryList[CurrentIndex].EntryType == IntegerEntry)
+				{
+					(*MenuEntryList[CurrentIndex].Integer)++;
+
+					ClearCurrentLine(TitleSize + CurrentIndex);
+					wprintf(EntryString(CurrentIndex, true).c_str());
 				}
 				break;
 			}
