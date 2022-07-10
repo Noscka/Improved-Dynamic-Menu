@@ -49,88 +49,49 @@ void DynamicMenu::DrawMenu(int CurrentIndex, int* TitleSize)
 	columns = csbi.srWindow.Right - csbi.srWindow.Left + 1;
 
 	// for loop using counter to get the index so to add the >< to the selected option
-	int counter = 0;
-	for (MenuEntry Entry : MenuEntryList)
+	for (int i = 0; i < MenuEntryList.ArrayIndexPointer; i++)
 	{
-		int SpaceLenght = ((columns / 2) - Entry.Name.length() / 2);
-
-		/* Do different things for NormalEntry and Submenu Entry*/
-		switch (Entry.EntryType)
-		{
-		case NormalEntry:
-			// Append to string as to make it be 1 print operation, makes it way quicker
-			if (counter == CurrentIndex)
-			{
-				OutputString += std::wstring(SpaceLenght - 2, ' ') + L">>" + Entry.Name + L"<<\n";
-			}
-			else
-			{
-				OutputString += std::wstring(SpaceLenght, ' ') + Entry.Name + L"\n";
-			}
-			break;
-		case SubMenuEntry:
-			// Append to string as to make it be 1 print operation, makes it way quicker
-			if (counter == CurrentIndex)
-			{
-				OutputString += std::wstring(SpaceLenght - 2, ' ') + L"\033[36m>>" + Entry.Name + L"<<\033[0m\n";
-			}
-			else
-			{
-				OutputString += std::wstring(SpaceLenght, ' ') + L"\033[36m" + Entry.Name + L"\033[0m\n";
-			}
-			break;
-
-		case BooleanEntry:
-			std::wstring FullBoolText = Entry.Name + std::wstring(4, ' ') + L"[ ]";
-
-			if (counter == CurrentIndex)
-			{
-				OutputString += std::wstring(SpaceLenght - 2, ' ') + L"\033[36m>>" + FullBoolText + L"<<\033[0m\n";
-			}
-			else
-			{
-				OutputString += std::wstring(SpaceLenght, ' ') + L"\033[36m" + FullBoolText + L"\033[0m\n";
-			}
-			break;
-		}
-		counter++;
+		if (i == CurrentIndex)
+			OutputString += EntryString(i, true);
+		else
+			OutputString += EntryString(i, false);
 	}
 
 	wprintf(OutputString.c_str());
 }
 
-std::wstring DynamicMenu::EntryString(int CurrentIndex, bool selected)
+std::wstring DynamicMenu::EntryString(int EntryIndex, bool selected)
 {
-	int SpaceLenght = ((columns / 2) - MenuEntryList[CurrentIndex].Name.length() / 2);
+	int SpaceLenght = ((columns / 2) - MenuEntryList[EntryIndex].Name.length() / 2);
 	std::wstring output;
 
-	switch (MenuEntryList[CurrentIndex].EntryType)
+	switch (MenuEntryList[EntryIndex].EntryType)
 	{
 	case NormalEntry:
 		// Append to string as to make it be 1 print operation, makes it way quicker
 		if (selected)
 		{
-			output += std::wstring(SpaceLenght - 2, ' ') + L">>" + MenuEntryList[CurrentIndex].Name + L"<<\n";
+			output += std::wstring(SpaceLenght - 2, ' ') + L">>" + MenuEntryList[EntryIndex].Name + L"<<\n";
 		}
 		else
 		{
-			output += std::wstring(SpaceLenght, ' ') + MenuEntryList[CurrentIndex].Name + L"\n";
+			output += std::wstring(SpaceLenght, ' ') + MenuEntryList[EntryIndex].Name + L"\n";
 		}
 		break;
 	case SubMenuEntry:
 		// Append to string as to make it be 1 print operation, makes it way quicker
 		if (selected)
 		{
-			output += std::wstring(SpaceLenght - 2, ' ') + L"\033[36m>>" + MenuEntryList[CurrentIndex].Name + L"<<\033[0m\n";
+			output += std::wstring(SpaceLenght - 2, ' ') + L"\033[36m>>" + MenuEntryList[EntryIndex].Name + L"<<\033[0m\n";
 		}
 		else
 		{
-			output += std::wstring(SpaceLenght, ' ') + L"\033[36m" + MenuEntryList[CurrentIndex].Name + L"\033[0m\n";
+			output += std::wstring(SpaceLenght, ' ') + L"\033[36m" + MenuEntryList[EntryIndex].Name + L"\033[0m\n";
 		}
 		break;
 
 	case BooleanEntry:
-		std::wstring FullBoolText = MenuEntryList[CurrentIndex].Name + std::wstring(4, ' ') + L"[ ]";
+		std::wstring FullBoolText = MenuEntryList[EntryIndex].Name + std::wstring(4, ' ') + L"[ ]";
 
 		if (selected)
 		{
@@ -233,6 +194,18 @@ void DynamicMenu::StartMenu()
 			FillConsoleOutputCharacter(console, ' ', cells, tl, &written);
 			FillConsoleOutputAttribute(console, s.wAttributes, cells, tl, &written);
 
+			/*
+			What needs to be redrawing depending on if its up for down
+			if the index goes down (bigger number), you need to clear above and current line
+			
+			|| Old Selected Entry
+			\/ New Selected Entry <-- Here is Cursor
+
+			and if going up (smaller number)
+			/\ New Selected Entry <-- Here is Cursor
+			|| Old Selected Entry
+			*/
+
 			if (CurrentIndex > OldIndex)
 			{
 				SetConsoleCursorPosition(GetStdHandle(STD_OUTPUT_HANDLE), { 0, (SHORT)(TitleSize + CurrentIndex-1) });
@@ -246,8 +219,6 @@ void DynamicMenu::StartMenu()
 
 		}
 
-		//SetConsoleCursorPosition(GetStdHandle(STD_OUTPUT_HANDLE),
-		//						 { (SHORT)(columns / 2), (SHORT)(CurrentIndex) });
 		OldIndex = CurrentIndex;
 	}
 }

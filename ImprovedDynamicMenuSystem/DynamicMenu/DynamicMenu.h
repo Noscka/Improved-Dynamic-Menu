@@ -87,7 +87,13 @@ public:
 	/// </summary>
 	void DrawMenu(int CurrentIndex, int* TitleSize);
 
-	std::wstring EntryString(int CurrentIndex, bool selected);
+	/// <summary>
+	/// Returns line string for a entry
+	/// </summary>
+	/// <param name="EntryIndex">- the index of the entry wanted</param>
+	/// <param name="selected">- if the entry is selected or not</param>
+	/// <returns></returns>
+	std::wstring EntryString(int EntryIndex, bool selected);
 
 	/// <summary>
 	/// Adds entry to menu
