@@ -32,6 +32,9 @@ int main()
 
     DynamicMenu SecondaryMenu = DynamicMenu(L"Second Menu", false, true, true);
 
+    SecondaryMenu.AddMenuEntry(MenuEntry(L"Number", &number));
+    SecondaryMenu.AddMenuEntry(MenuEntry(L"Check Number", CheckNumber));
+
     MainMenu.AddMenuEntry(MenuEntry(L"Another Menu", &SecondaryMenu));
 
     MainMenu.AddMenuEntry(MenuEntry(L"Toggle", &SomeBool));

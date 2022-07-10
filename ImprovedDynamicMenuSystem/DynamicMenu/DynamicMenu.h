@@ -15,7 +15,9 @@
 #define ARROW_DOWN  80
 #define ARROW_LEFT	75
 #define ARROW_RIGHT	77
+
 #define ENTER       13
+#define BACKSPACE	8
 
 class DynamicMenu;
 
@@ -75,18 +77,20 @@ class DynamicMenu
 {
 private:
 	CONSOLE_SCREEN_BUFFER_INFO csbi;
+	HANDLE ConsoleHandle;
 	int columns, rows;
 	DynamicArray<MenuEntry> MenuEntryList;
-	bool ContinueMenu, AddExitEntry, CustomTitle, CenteredTitle;
+	bool ContinueMenu, AddExitEntry, CustomTitle, CenteredTitle, AddedQuit;
 	std::wstring Title;
 public:
 	
 	/// <summary>
 	/// creates the menu object
 	/// </summary>
-	/// <param name="title">- Title</param>
+	/// <param name="title">- menu title</param>
 	/// <param name="customTitle">- if the title should be generated to UnicodeText or use the string direct</param>
 	/// <param name="addExitEntry">- add a premade function to stop the menu</param>
+	/// <param name="centeredTitle">- If the title should be centered or not</param>
 	DynamicMenu(std::wstring title, bool customTitle = false, bool addExitEntry = true, bool centeredTitle = true);
 
 	/// <summary>
@@ -97,6 +101,8 @@ public:
 	/// <summary>
 	/// Draws the menu
 	/// </summary>
+	/// <param name="CurrentIndex">- currrent index</param>
+	/// <param name="TitleSize">- pointer to the title size int so it can be calculated</param>
 	void DrawMenu(int CurrentIndex, int* TitleSize);
 
 	/// <summary>
@@ -104,8 +110,20 @@ public:
 	/// </summary>
 	/// <param name="EntryIndex">- the index of the entry wanted</param>
 	/// <param name="selected">- if the entry is selected or not</param>
-	/// <returns></returns>
+	/// <returns>Entry line string</returns>
 	std::wstring EntryString(int EntryIndex, bool selected);
+
+	/// <summary>
+	/// Clears the whole screen
+	/// </summary>
+	/// <param name="fill">- what character to fill the screen with</param>
+	void clear_screen(char fill = ' ');
+
+	/// <summary>
+	/// Clears the line selected
+	/// </summary>
+	/// <param name="Position">- The absolute position</param>
+	void ClearCurrentLine(int Position);
 
 	/// <summary>
 	/// Adds entry to menu
