@@ -93,7 +93,11 @@ std::wstring DynamicMenu::EntryString(int EntryIndex, bool selected)
 		break;
 
 	case BooleanEntry:
-		std::wstring FullBoolText = MenuEntryList[EntryIndex].Name + std::wstring(4, ' ') + L"[ ]";
+		std::wstring FullBoolText;
+		if(*MenuEntryList[EntryIndex].Boolean)
+			FullBoolText = MenuEntryList[EntryIndex].Name + std::wstring(4, ' ') + L"[X]";
+		else
+			FullBoolText = MenuEntryList[EntryIndex].Name + std::wstring(4, ' ') + L"[ ]";
 
 		if (selected)
 		{
@@ -152,6 +156,20 @@ void DynamicMenu::StartMenu()
 				clear_screen();
 				MenuEntryList[CurrentIndex].SubMenu->StartMenu();
 				DrawMenu(CurrentIndex, &TitleSize);
+				break;
+			case BooleanEntry:
+				*MenuEntryList[CurrentIndex].Boolean = !*MenuEntryList[CurrentIndex].Boolean;
+
+				COORD tl = { 0, (SHORT)(TitleSize + CurrentIndex) };
+				CONSOLE_SCREEN_BUFFER_INFO s;
+				HANDLE console = GetStdHandle(STD_OUTPUT_HANDLE);
+				GetConsoleScreenBufferInfo(console, &s);
+				DWORD written, cells = s.dwSize.X;
+				FillConsoleOutputCharacter(console, ' ', cells, tl, &written);
+				FillConsoleOutputAttribute(console, s.wAttributes, cells, tl, &written);
+				SetConsoleCursorPosition(console, tl);
+
+				wprintf(EntryString(CurrentIndex, true).c_str());
 				break;
 			}
 		}
@@ -215,7 +233,7 @@ void DynamicMenu::StartMenu()
 			if (CurrentIndex > OldIndex) /* Going Down */
 			{
 
-				SetConsoleCursorPosition(GetStdHandle(STD_OUTPUT_HANDLE), { 0, (SHORT)(TitleSize + CurrentIndex-1) });
+				SetConsoleCursorPosition(console, { 0, (SHORT)(TitleSize + CurrentIndex-1) });
 				wprintf((EntryString(OldIndex, false) + EntryString(CurrentIndex, true)).c_str());
 
 				if ((TitleSize + CurrentIndex) + (rows / 2) < 0)
@@ -229,7 +247,7 @@ void DynamicMenu::StartMenu()
 			}
 			else /* Going Up */
 			{
-				SetConsoleCursorPosition(GetStdHandle(STD_OUTPUT_HANDLE), { 0, (SHORT)(TitleSize + CurrentIndex) });
+				SetConsoleCursorPosition(console, { 0, (SHORT)(TitleSize + CurrentIndex) });
 				wprintf((EntryString(CurrentIndex, true) + EntryString(OldIndex, false)).c_str());
 
 				if ((TitleSize + CurrentIndex) - (rows / 2) < 0)
@@ -239,7 +257,7 @@ void DynamicMenu::StartMenu()
 				else
 					FinalPosition = { 0, (SHORT)((TitleSize + CurrentIndex) - (rows / 2)) };
 
-				SetConsoleCursorPosition(GetStdHandle(STD_OUTPUT_HANDLE), FinalPosition);
+				SetConsoleCursorPosition(console, FinalPosition);
 			}
 
 		}

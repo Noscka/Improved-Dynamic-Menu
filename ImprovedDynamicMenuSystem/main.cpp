@@ -9,18 +9,16 @@ void Print()
     system("Pause");
 }
 
-void up()
+bool SomeBool = false;
+
+void CheckBool()
 {
-    HANDLE hConsole = GetStdHandle(STD_OUTPUT_HANDLE);
-    COORD pos = { 3, 6 };
-    SetConsoleCursorPosition(hConsole, pos);
+    wprintf(SomeBool ? L"true" : L"false");
     system("Pause");
 }
 
 int main()
 {
-    bool SomeBool;
-
     _setmode(_fileno(stdout), _O_U8TEXT);
 
     DynamicMenu SomeMenu = DynamicMenu(L"gaga", false, true);
@@ -31,14 +29,12 @@ int main()
     SomeMenu.AddMenuEntry(ME);
     SomeMenu.AddMenuEntry(MenuEntry(L"OnOff", &SomeBool));
 
-
+    SomeMenu.AddMenuEntry(MenuEntry(L"Check Bool", CheckBool));
 
     for (int i = 0; i < 30; i++)
     {
         SomeMenu.AddMenuEntry(MenuEntry(L"gawg", Print));
     }
-
-    SomeMenu.AddMenuEntry(MenuEntry(L"Up", up));
 
     SomeMenu.StartMenu();
 }
