@@ -118,7 +118,7 @@ std::wstring DynamicMenu::EntryString(int EntryIndex, bool selected)
 		
 		if (selected)
 		{
-			EntryText = MenuEntryList[EntryIndex].Name + std::wstring(4, ' ') + L"<" + std::to_wstring(*MenuEntryList[EntryIndex].Integer) + L">";
+			EntryText = MenuEntryList[EntryIndex].Name + std::wstring(4, ' ') + L"<" + std::to_wstring(*MenuEntryList[EntryIndex].Integer) + L">\n";
 			//return std::wstring(SpaceLenght - 2, ' ') + L">>" + EntryText + L"<<\n";
 			return std::wstring(SpaceLenght - 2, ' ') + EntryText;
 		}
