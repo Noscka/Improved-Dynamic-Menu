@@ -10,6 +10,7 @@
 #include <list>
 #include "UnicodeTextGenerator/UnicodeTextGenerator.h"
 #include "../DynamicArrayFiles/DynamicArray.h"
+#include <algorithm>
 
 #define ARROW_UP    72
 #define ARROW_DOWN  80

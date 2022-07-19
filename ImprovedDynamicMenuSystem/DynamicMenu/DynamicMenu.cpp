@@ -101,7 +101,7 @@ void DynamicMenu::StartMenu()
 							NewInt.pop_back();
 						}
 					}
-					else if (isdigit(c))
+					else if (isdigit(c) || (c == '-' && NewInt.empty()))
 					{
 						wprintf(L"%c", c);
 						NewInt += c;
@@ -109,7 +109,10 @@ void DynamicMenu::StartMenu()
 				}
 
 				if (!NewInt.empty())
-					*MenuEntryList[CurrentIndex].Integer = std::stoi(NewInt);
+				{
+
+					*MenuEntryList[CurrentIndex].Integer = std::clamp(std::stoi(NewInt), INT_MIN, INT_MAX);
+				}
 				ClearCurrentLine(TitleSize + CurrentIndex);
 				wprintf(EntryString(CurrentIndex, true).c_str());
 				break;
