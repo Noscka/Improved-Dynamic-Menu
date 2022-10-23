@@ -110,8 +110,17 @@ void DynamicMenu::StartMenu()
 
 				if (!NewInt.empty())
 				{
-
-					*MenuEntryList[CurrentIndex].Integer = std::clamp(std::stoi(NewInt), INT_MIN, INT_MAX);
+					try
+					{
+						*MenuEntryList[CurrentIndex].Integer = std::stoi(NewInt);
+					}
+					catch (std::out_of_range ex)
+					{
+						if(NewInt[0] == '-')
+							*MenuEntryList[CurrentIndex].Integer = INT_MIN;
+						else
+							*MenuEntryList[CurrentIndex].Integer = INT_MAX;
+					}
 				}
 				ClearCurrentLine(TitleSize + CurrentIndex);
 				wprintf(EntryString(CurrentIndex, true).c_str());
